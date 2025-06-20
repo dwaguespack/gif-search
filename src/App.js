@@ -9,7 +9,8 @@ function App() {
   const [limitModal, setLimitModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
-  const [timer, setTimer] = useState(null);
+  const [rateLimitTimer, setRateLimitTimer] = useState(null);
+  const [copiedTimer, setCopiedTimer] = useState(null);
   const [page, setPage] = useState(0);
   const [cache, setCache] = useState([]);
 
@@ -56,7 +57,10 @@ function App() {
   function showLimitModal() {
     // show rate limit modal and close it after 8 seconds
     setLimitModal(true);
-    setTimer(setTimeout(() => setLimitModal(false), 8000));
+    if(rateLimitTimer) {
+      clearTimeout(rateLimitTimer);
+    }
+    setRateLimitTimer(setTimeout(() => setLimitModal(false), 8000));
   }
 
   useEffect(() => {
@@ -79,6 +83,7 @@ function App() {
       console.error('Error fetching GIFs:', err);
     }
     })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
   function copyUrlToClipboard(gif) {
@@ -86,10 +91,10 @@ function App() {
     navigator.clipboard.writeText(url).then(res => console.log(res));
     setCopied(true);
     setCopiedId(gif.id);
-    if(timer) {
-      clearTimeout(timer);
+    if(copiedTimer) {
+      clearTimeout(copiedTimer);
     }
-    setTimer(setTimeout(() => setCopied(false), 8000));
+    setCopiedTimer(setTimeout(() => setCopied(false), 6000));
   };
 
   function handleNext() {
