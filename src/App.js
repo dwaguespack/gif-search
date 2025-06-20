@@ -100,6 +100,13 @@ function App() {
     setPage(page - 1);
   }
 
+  function recallHistory(query) {
+    let cacheItem = cache.find((item) => item.query === query);
+    setQuery(query);
+    setPage(0);
+    setGifs([...cacheItem.data]);
+  }
+
   return (
     <div className="App">
       <h1>GIF Search</h1>
@@ -115,6 +122,10 @@ function App() {
       </form>
 
       <div>{limitModal && (<div className="rate-limit-modal">GIPHY API rate limit reached!</div>)}</div>
+
+      <div className="history-list">
+        {cache.map((cacheItem) => (<button className="history-list-item" onClick={() => recallHistory(cacheItem.query)}>{cacheItem.query}</button>))}
+      </div>
 
       <div className="gif-grid">
         {gifs.map((gif, index) => (

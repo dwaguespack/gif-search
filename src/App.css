@@ -62,3 +62,16 @@ figcaption {
   background-color: white;
   font-weight: bold;
 }
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.history-list-item {
+  padding: 5px;
+  margin: .5rem;
+  border:1px solid #888;
+  border-radius: 8px;
+  background-color: white;
+}
