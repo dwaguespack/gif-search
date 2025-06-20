@@ -7,6 +7,8 @@ input {
   padding: 0.5rem;
   font-size: 1rem;
   width: 300px;
+  border:1px solid black;
+  border-radius: 8px;
 }
 
 button {
@@ -14,6 +16,17 @@ button {
   font-size: 1rem;
   margin-left: 10px;
   cursor: pointer;
+  border:1px solid black;
+  border-radius: 8px;
+}
+
+figcaption {
+  font-weight: bold;
+  max-width: 15em;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gif-grid {
@@ -22,18 +35,30 @@ button {
   justify-content: center;
   margin-top: 2rem;
   gap: 10px;
-  overflow: auto;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
-.gif-item img {
+.gif-item video {
   height: 200px;
+  width: 15em;
+  cursor: pointer;
+  border:1px solid rgba(0, 0, 0, 0.278);
   border-radius: 8px;
 }
 
 .rate-limit-modal {
-  background-color: #e02525d9; 
+  background-color: #e025255b; 
   margin: 15% auto; 
   padding: 10px; 
   border: 1px solid #888; 
   width: 20%;
+}
+
+.more-button {
+  padding:0%;
+  border: none;
+  margin: 1rem;
+  background-color: white;
+  font-weight: bold;
 }
