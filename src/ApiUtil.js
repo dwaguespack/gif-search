@@ -1,5 +1,5 @@
 class GiphyApi {
-  API_KEY = "ve62PUc37AMEOfQHyEUJif2gVObK8SMg";
+  API_KEY = "ve62PUc37AMEOfQHyEUJif2gVObK8SMg"; // shuold externalize
   BASE_URL = "https://api.giphy.com/v1/gifs";
 
   async getGifs(query, count) {
