@@ -12,10 +12,9 @@ function App() {
   const [copiedTimer, setCopiedTimer] = useState(null); // the timer for the copied alert
   const [page, setPage] = useState(0); // the number used to paginate the display
   const [cache, setCache] = useState([]); // the cached GIFs from all previous searches
-  const [initialState, setInitialState] = useState(true);
-  // const [gifIndex, setGifIndex] = useState(0); // keeps track of index of last GIF displayed
+  const [initialState, setInitialState] = useState(true); // whether the app is in its initial state
 
-  let displayedGifCount = 0;
+  let displayedGifCount = 0; // number of GIFs in current display
 
   useEffect(() => {
     // populates view with initial 3 random gifs
