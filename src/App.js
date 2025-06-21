@@ -12,6 +12,10 @@ function App() {
   const [copiedTimer, setCopiedTimer] = useState(null); // the timer for the copied alert
   const [page, setPage] = useState(0); // the number used to paginate the display
   const [cache, setCache] = useState([]); // the cached GIFs from all previous searches
+  const [initialState, setInitialState] = useState(true);
+  // const [gifIndex, setGifIndex] = useState(0); // keeps track of index of last GIF displayed
+
+  let displayedGifCount = 0;
 
   useEffect(() => {
     // populates view with initial 3 random gifs
@@ -62,6 +66,7 @@ function App() {
         let cacheItem = { query: query, data: data.data, offset: 1 };
         addToCache(cacheItem);
         setPage(0);
+        setInitialState(false);
       } else if (response.status === 429) {
         showLimitModal();
       } else {
@@ -102,6 +107,7 @@ function App() {
   }
 
   async function handleNext() {
+    displayedGifCount = 0;
     if ((page + 1) * 10 >= gifs.length) {
       await requestMoreGifs();
     }
@@ -158,7 +164,11 @@ function App() {
 
   function showGifAt(index) {
     // limits the grid to 10 GIFs per page
-    return index >= page * 10 && index < (page + 1) * 10;
+    if (index >= page * 10 && index < (page + 1) * 10) {
+      displayedGifCount = displayedGifCount + 1;
+      return true;
+    }
+    return false;
   }
 
   return (
@@ -219,7 +229,7 @@ function App() {
           &lt;&lt; Previous
         </button>
       )}
-      {gifs.length > 3 && (
+      {displayedGifCount === 10 && !initialState && (
         <button className="nav-button" onClick={handleNext}>
           Next &gt;&gt;
         </button>
