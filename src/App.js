@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-
-const API_KEY = 've62PUc37AMEOfQHyEUJif2gVObK8SMg';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import giphy from "./ApiUtil";
 
 function App() {
-  const [query, setQuery] = useState(''); // the query text
+  const [query, setQuery] = useState(""); // the query text
   const [gifs, setGifs] = useState([]); // the gifs that appear in the view
   const [limitModal, setLimitModal] = useState(false); // the API rate limit alert
   const [copied, setCopied] = useState(false); // the copied GIF alert
@@ -14,12 +13,41 @@ function App() {
   const [page, setPage] = useState(0); // the number used to paginate the display
   const [cache, setCache] = useState([]); // the cached GIFs from all previous searches
 
+  useEffect(() => {
+    // populates view with initial 3 random gifs
+    (async () => {
+      try {
+        const response = [
+          await giphy.getRandomGif(),
+          await giphy.getRandomGif(),
+          await giphy.getRandomGif(),
+        ];
+        if (response[0].ok && response[1].ok && response[2].ok) {
+          const data1 = await response[0].json();
+          const data2 = await response[1].json();
+          const data3 = await response[2].json();
+          setGifs([data1.data, data2.data, data3.data]);
+        } else if (
+          response[1].status === 429 ||
+          response[1].status === 429 ||
+          response[2].status === 429
+        ) {
+          showLimitModal();
+        } else {
+          throw new Error("Response was not ok");
+        }
+      } catch (err) {
+        console.error("Error fetching GIFs:", err);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const searchGifs = async (e) => {
     e.preventDefault();
     if (!query) return;
     let foundCacheItem = searchCache(query);
-    if(foundCacheItem) {
+    if (foundCacheItem) {
       // resuse results of previous query
       setGifs([...foundCacheItem.data]);
       setPage(0);
@@ -27,24 +55,22 @@ function App() {
     }
     try {
       // the free GIPHY API key allows max limit=50
-      const response = await fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&rating=g&q=${encodeURIComponent(query)}&limit=50`
-      );
+      const response = await giphy.getGifs(query, 50);
       if (response.ok) {
         const data = await response.json();
         setGifs(data.data);
-        let cacheItem = {'query':query, 'data': data.data, 'offset':1};
+        let cacheItem = { query: query, data: data.data, offset: 1 };
         addToCache(cacheItem);
         setPage(0);
-      } else if(response.status === 429) {
+      } else if (response.status === 429) {
         showLimitModal();
       } else {
-        throw new Error('Response was not ok');
+        throw new Error("Response was not ok");
       }
     } catch (err) {
-      console.error('Error fetching GIFs:', err);
+      console.error("Error fetching GIFs:", err);
     }
-  }
+  };
 
   function searchCache(query) {
     return cache.find((item) => item.query === query);
@@ -57,42 +83,19 @@ function App() {
   function showLimitModal() {
     // show rate limit modal and close it after 8 seconds
     setLimitModal(true);
-    if(rateLimitTimer) {
+    if (rateLimitTimer) {
       clearTimeout(rateLimitTimer);
     }
     setRateLimitTimer(setTimeout(() => setLimitModal(false), 8000));
   }
 
-  useEffect(() => {
-    // populates view with initial 3 random gifs
-    (async () => {
-      try {
-        // TODO: call 2 more times
-      const response = await fetch(
-        `https://api.giphy.com/v1/gifs/random?api_key=${API_KEY}&rating=g}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setGifs([data.data]);
-      } else if(response.status === 429) {
-        showLimitModal();
-      } else {
-        throw new Error('Response was not ok');
-      }
-    } catch (err) {
-      console.error('Error fetching GIFs:', err);
-    }
-    })()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[]);
-
   function copyUrlToClipboard(gif) {
     let url = gif.images.fixed_height.mp4;
-    navigator.clipboard.writeText(url).then(res => console.log(res));
+    navigator.clipboard.writeText(url).then((res) => console.log(res));
     // changes the GIF text to 'Copied!' for 6 seconds
     setCopied(true);
     setCopiedId(gif.id);
-    if(copiedTimer) {
+    if (copiedTimer) {
       clearTimeout(copiedTimer);
     }
     setCopiedTimer(setTimeout(() => setCopied(false), 6000));
@@ -100,7 +103,7 @@ function App() {
 
   async function handleNext(e) {
     e.preventDefault();
-    if((page+1)*10 >= gifs.length) {
+    if ((page + 1) * 10 >= gifs.length) {
       await requestMoreGifs();
     }
     setPage(page + 1);
@@ -121,21 +124,27 @@ function App() {
     // call endpoint with offset
     let cacheItem = searchCache(query);
     try {
-      const response = await fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&rating=g&q=${encodeURIComponent(query)}&limit=50&offset=${cacheItem.offset*50}`
+      const response = await giphy.getGifsOffset(
+        query,
+        50,
+        cacheItem.offset * 50
       );
       if (response.ok) {
         const data = await response.json();
         let newData = [...cacheItem.data, ...data.data];
         setGifs(newData);
-        updateCacheItem({'query':query, 'data':newData, 'offset': cacheItem.offset + 1});
-      } else if(response.status === 429) {
+        updateCacheItem({
+          query: query,
+          data: newData,
+          offset: cacheItem.offset + 1,
+        });
+      } else if (response.status === 429) {
         showLimitModal();
       } else {
-        throw new Error('Response was not ok');
+        throw new Error("Response was not ok");
       }
     } catch (err) {
-        console.error('Error fetching GIFs:', err);
+      console.error("Error fetching GIFs:", err);
     }
   }
 
@@ -160,30 +169,60 @@ function App() {
         <button type="submit">Search</button>
       </form>
 
-      <div>{limitModal && (<div className="rate-limit-modal">GIPHY API rate limit reached!</div>)}</div>
+      <div>
+        {limitModal && (
+          <div className="rate-limit-modal">GIPHY API rate limit reached!</div>
+        )}
+      </div>
 
       <div className="history-list">
-        {cache.map((cacheItem) => (<button className="history-list-item" onClick={() => recallHistory(cacheItem.query)}>{cacheItem.query}</button>))}
+        {cache.map((cacheItem) => (
+          <button
+            className="history-list-item"
+            onClick={() => recallHistory(cacheItem.query)}
+          >
+            {cacheItem.query}
+          </button>
+        ))}
       </div>
 
       <div className="gif-grid">
-        {gifs.map((gif, index) => (
-          ((index >= page*10) && (index < (page+1)*10)) && (
-          <div key={gif.id} className="gif-item" onClick={() => copyUrlToClipboard(gif)} hidden={!((index >= page*10) && (index < (page+1)*10))}>
-            <figure>
-              <video
-                src={gif.images.fixed_height.mp4}
-                autoPlay
-                loop
-                muted
-                playsInline
-              /> <figcaption>{(copied && gif.id === copiedId) ? 'Copied!' : gif.title}</figcaption>
-            </figure>
-          </div>
-        )))}
+        {gifs.map(
+          (gif, index) =>
+            index >= page * 10 &&
+            index < (page + 1) * 10 && (
+              <div
+                key={gif.id}
+                className="gif-item"
+                onClick={() => copyUrlToClipboard(gif)}
+                hidden={!(index >= page * 10 && index < (page + 1) * 10)}
+              >
+                <figure>
+                  <video
+                    src={gif.images.fixed_height.mp4}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />{" "}
+                  <figcaption>
+                    {copied && gif.id === copiedId ? "Copied!" : gif.title}
+                  </figcaption>
+                </figure>
+              </div>
+            )
+        )}
       </div>
-      <button className='nav-button' onClick={hanldePrevious} hidden={page === 0}>&lt;&lt; Previous</button>
-      <button className='nav-button' onClick={handleNext}>Next &gt;&gt;</button>
+      <button
+        className="nav-button"
+        onClick={hanldePrevious}
+        hidden={page === 0}
+      >
+        &lt;&lt; Previous
+      </button>
+      <button className="nav-button" onClick={handleNext}>
+        Next &gt;&gt;
+      </button>
     </div>
   );
 }

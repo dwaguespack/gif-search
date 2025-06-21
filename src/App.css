@@ -7,7 +7,7 @@ input {
   padding: 0.5rem;
   font-size: 1rem;
   width: 300px;
-  border:1px solid black;
+  border: 1px solid black;
   border-radius: 8px;
 }
 
@@ -16,7 +16,7 @@ button {
   font-size: 1rem;
   margin-left: 10px;
   cursor: pointer;
-  border:1px solid black;
+  border: 1px solid black;
   border-radius: 8px;
 }
 
@@ -43,20 +43,20 @@ figcaption {
   height: 200px;
   width: 15em;
   cursor: pointer;
-  border:1px solid rgba(0, 0, 0, 0.278);
+  border: 1px solid rgba(0, 0, 0, 0.278);
   border-radius: 8px;
 }
 
 .rate-limit-modal {
-  background-color: #e025255b; 
-  margin: 15% auto; 
-  padding: 10px; 
-  border: 1px solid #888; 
+  background-color: #e025255b;
+  margin: 15% auto;
+  padding: 10px;
+  border: 1px solid #888;
   width: 20%;
 }
 
 .nav-button {
-  padding:0%;
+  padding: 0%;
   border: none;
   margin: 1rem;
   background-color: white;
@@ -70,8 +70,8 @@ figcaption {
 
 .history-list-item {
   padding: 5px;
-  margin: .5rem;
-  border:1px solid #888;
+  margin: 0.5rem;
+  border: 1px solid #888;
   border-radius: 8px;
   background-color: white;
 }
