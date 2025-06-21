@@ -101,8 +101,7 @@ function App() {
     setCopiedTimer(setTimeout(() => setCopied(false), 6000));
   }
 
-  async function handleNext(e) {
-    e.preventDefault();
+  async function handleNext() {
     if ((page + 1) * 10 >= gifs.length) {
       await requestMoreGifs();
     }
@@ -149,10 +148,17 @@ function App() {
   }
 
   function updateCacheItem(newCacheItem) {
+    // replaces the old cache item for the given query with the new one
+    // used to add more GIFs to an existing cached query
     let index = cache.findIndex((item) => item.query === newCacheItem.query);
     let newCache = [...cache];
     newCache[index] = newCacheItem;
     setCache(newCache);
+  }
+
+  function showGifAt(index) {
+    // limits the grid to 10 GIFs per page
+    return index >= page * 10 && index < (page + 1) * 10;
   }
 
   return (
@@ -186,13 +192,11 @@ function App() {
       <div className="gif-grid">
         {gifs.map(
           (gif, index) =>
-            index >= page * 10 &&
-            index < (page + 1) * 10 && (
+            showGifAt(index) && (
               <div
                 key={gif.id}
                 className="gif-item"
                 onClick={() => copyUrlToClipboard(gif)}
-                hidden={!(index >= page * 10 && index < (page + 1) * 10)}
               >
                 <figure>
                   <video
