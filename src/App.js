@@ -157,6 +157,9 @@ function App() {
 
   return (
     <div className="App">
+      {limitModal && (
+        <div className="rate-limit-modal">GIPHY API rate limit reached!</div>
+      )}
       <h1>GIF Search</h1>
       <p>Click on a GIF to copy its URL.</p>
       <form onSubmit={searchGifs}>
@@ -168,12 +171,6 @@ function App() {
         />
         <button type="submit">Search</button>
       </form>
-
-      <div>
-        {limitModal && (
-          <div className="rate-limit-modal">GIPHY API rate limit reached!</div>
-        )}
-      </div>
 
       <div className="history-list">
         {cache.map((cacheItem) => (
@@ -213,16 +210,16 @@ function App() {
             )
         )}
       </div>
-      <button
-        className="nav-button"
-        onClick={hanldePrevious}
-        hidden={page === 0}
-      >
-        &lt;&lt; Previous
-      </button>
-      <button className="nav-button" onClick={handleNext}>
-        Next &gt;&gt;
-      </button>
+      {page > 0 && (
+        <button className="nav-button" onClick={hanldePrevious}>
+          &lt;&lt; Previous
+        </button>
+      )}
+      {gifs.length > 3 && (
+        <button className="nav-button" onClick={handleNext}>
+          Next &gt;&gt;
+        </button>
+      )}
     </div>
   );
 }

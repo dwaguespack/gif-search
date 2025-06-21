@@ -15,6 +15,7 @@ button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
   margin-left: 10px;
+  margin-top: 10px;
   cursor: pointer;
   border: 1px solid black;
   border-radius: 8px;
@@ -29,14 +30,16 @@ figcaption {
   text-overflow: ellipsis;
 }
 
+figure {
+  margin: 1px;
+}
+
 .gif-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 2rem;
   gap: 10px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
 }
 
 .gif-item video {
@@ -48,17 +51,22 @@ figcaption {
 }
 
 .rate-limit-modal {
+  margin-bottom: 10px;
   background-color: #e025255b;
-  margin: 15% auto;
-  padding: 10px;
+  padding: 5px;
   border: 1px solid #888;
   width: 20%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  font-weight: bold;
 }
 
 .nav-button {
   padding: 0%;
   border: none;
-  margin: 1rem;
+  margin: 2rem;
   background-color: white;
   font-weight: bold;
 }
