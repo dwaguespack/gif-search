@@ -182,8 +182,8 @@ function App() {
           </div>
         )))}
       </div>
-      <button class='nav-button' onClick={hanldePrevious} hidden={page === 0}>&lt;&lt; Previous</button>
-      <button class='nav-button' onClick={handleNext}>Next &gt;&gt;</button>
+      <button className='nav-button' onClick={hanldePrevious} hidden={page === 0}>&lt;&lt; Previous</button>
+      <button className='nav-button' onClick={handleNext}>Next &gt;&gt;</button>
     </div>
   );
 }
