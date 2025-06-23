@@ -173,12 +173,22 @@ function App() {
   return (
     <div className="App">
       {limitModal && (
-        <div className="rate-limit-modal">GIPHY API rate limit reached!</div>
+        <div className="rate-limit-modal" role="alert" aria-live="assertive">
+          GIPHY API rate limit reached!
+        </div>
       )}
-      <h1>GIF Search</h1>
-      <p>Click on a GIF to copy its URL.</p>
-      <form onSubmit={searchGifs}>
+
+      <header>
+        <h1>GIF Search</h1>
+        <p>Click on a GIF to copy its URL.</p>
+      </header>
+
+      <form onSubmit={searchGifs} role="search" aria-label="Search GIFs">
+        <label htmlFor="gif-search" className="sr-only">
+          Search for GIFs
+        </label>
         <input
+          id="gif-search"
           type="text"
           placeholder="Search for GIFs"
           value={query}
@@ -187,52 +197,68 @@ function App() {
         <button type="submit">Search</button>
       </form>
 
-      <div className="history-list">
-        {cache.map((cacheItem) => (
+      <section className="history-list" aria-label="Search history">
+        {cache.map((cacheItem, idx) => (
           <button
+            key={`${cacheItem.query}-${idx}`}
             className="history-list-item"
             onClick={() => recallHistory(cacheItem.query)}
+            aria-label={`Search again for ${cacheItem.query}`}
           >
             {cacheItem.query}
           </button>
         ))}
-      </div>
+      </section>
 
-      <div className="gif-grid">
-        {gifs.map(
-          (gif, index) =>
-            showGifAt(index) && (
-              <div
-                key={gif.id}
-                className="gif-item"
-                onClick={() => copyUrlToClipboard(gif)}
-              >
-                <figure>
-                  <video
-                    src={gif.images.fixed_height.mp4}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />{" "}
-                  <figcaption>
-                    {copied && gif.id === copiedId ? "Copied!" : gif.title}
-                  </figcaption>
-                </figure>
-              </div>
-            )
+      <main>
+        <section className="gif-grid" aria-label="Search results">
+          {gifs.map(
+            (gif, index) =>
+              showGifAt(index) && (
+                <div
+                  key={gif.id}
+                  className="gif-item"
+                  role="button"
+                  tabIndex="0"
+                  aria-label={`GIF titled ${gif.title}. Click to copy URL.`}
+                  onClick={() => copyUrlToClipboard(gif)}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") &&
+                    copyUrlToClipboard(gif)
+                  }
+                >
+                  <figure>
+                    <video
+                      src={gif.images.fixed_height.mp4}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      aria-label={gif.title}
+                      title={gif.title}
+                    />
+                    <figcaption aria-live="polite">
+                      {copied && gif.id === copiedId ? "Copied!" : gif.title}
+                    </figcaption>
+                  </figure>
+                </div>
+              )
+          )}
+        </section>
+      </main>
+
+      <nav aria-label="Pagination">
+        {page > 0 && (
+          <button className="nav-button" onClick={hanldePrevious}>
+            &lt;&lt; Previous
+          </button>
         )}
-      </div>
-      {page > 0 && (
-        <button className="nav-button" onClick={hanldePrevious}>
-          &lt;&lt; Previous
-        </button>
-      )}
-      {displayedGifCount === 10 && !initialState && (
-        <button className="nav-button" onClick={handleNext}>
-          Next &gt;&gt;
-        </button>
-      )}
+        {displayedGifCount === 10 && !initialState && (
+          <button className="nav-button" onClick={handleNext}>
+            Next &gt;&gt;
+          </button>
+        )}
+      </nav>
     </div>
   );
 }

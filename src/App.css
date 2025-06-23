@@ -137,3 +137,11 @@ figure {
   background-color: #e6f0ff;
   border-color: #4a90e2;
 }
+
+.sr-only {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
